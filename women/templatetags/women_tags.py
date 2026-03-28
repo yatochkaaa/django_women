@@ -11,6 +11,6 @@ def get_categories():
 
 @register.inclusion_tag("women/list_categories.html", takes_context=True)
 def show_categories(context):
-    category_selected = context["category_selected"]
+    category_selected = context.get("category_selected", 0)
     categories = views.categories_db
     return {"categories": categories, "category_selected": category_selected}

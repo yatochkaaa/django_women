@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
 <h1>{{ title }}</h1>
+<hr>
 <ul class="list-articles">
   {% for post in posts %}
-  {% if post.is_published %}
   <li>
     <h2>{{ post.title }}</h2>
     {% autoescape off %}
@@ -11,11 +11,11 @@
     {% endautoescape %}
     <div class="clear"></div>
     <p class="link-read-post">
-      <a href="{% url 'post' post.id %}">Читать пост</a>
+      <a href="{{ post.get_absolute_url }}">Читать пост</a>
     </p>
     {% if not forloop.last %}
     {% endif %}
   </li>
-  {% endif %} {% endfor %}
+  {% endfor %}
 </ul>
 {% endblock %}
