@@ -14,7 +14,7 @@ def index(request):
     data = {
         "title": "Главная страница",
         "menu": menu,
-        "posts": Women.published.all(),
+        "posts": Women.published.all().select_related("category"),
         "category_selected": 0,
     }
     return render(request, "women/index.html", data)
@@ -48,7 +48,7 @@ def login(request):
 
 def show_category(request, category_slug):
     category = get_object_or_404(Category, slug=category_slug)
-    category_posts = Women.published.filter(category_id=category.pk)
+    category_posts = Women.published.filter(category_id=category.pk).select_related("category")
     data = {
         "title": f"Рубрика: {category.name}",
         "menu": menu,
@@ -60,7 +60,7 @@ def show_category(request, category_slug):
 
 def show_tagpost_list(request, tagpost_slug):
     tag = get_object_or_404(TagPost, slug=tagpost_slug)
-    posts = tag.tags.filter(is_published=Women.Status.PUBLISHED)
+    posts = tag.tags.filter(is_published=Women.Status.PUBLISHED).select_related("category")
     data = {
         "title": f"Тег: {tag.tag}",
         "menu": menu,
