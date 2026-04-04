@@ -1,5 +1,6 @@
 from django.contrib import admin, messages
 from django.db.models.functions import Length
+from django.utils.safestring import mark_safe
 from .models import Category, Women
 
 
@@ -22,12 +23,22 @@ class MarriedFilter(admin.SimpleListFilter):
 
 @admin.register(Women)
 class WomenAdmin(admin.ModelAdmin):
-    fields = ["title", "slug", "content", "category", "husband", "tags"]
+    fields = [
+        "title",
+        "slug",
+        "content",
+        "photo",
+        "post_photo",
+        "category",
+        "husband",
+        "tags",
+    ]
     # exclude = ['tags', 'is_published']
-    # readonly_fields = ["slug"]
+    readonly_fields = ["post_photo"]
     prepopulated_fields = {"slug": ["title"]}
     list_display = (
         "title",
+        "post_photo",
         "time_create",
         "is_published",
         "category",
@@ -41,6 +52,13 @@ class WomenAdmin(admin.ModelAdmin):
     search_fields = ["title", "category__name"]
     list_filter = ["category__name", "is_published", MarriedFilter]
     filter_horizontal = ["tags"]
+    save_on_top = True
+
+    @admin.display(description="Изображение")
+    def post_photo(self, women: Women):
+        if women.photo:
+            return mark_safe(f'<img src="{women.photo.url}" width="50" height="50">')
+        return "Без фото"
 
     @admin.display(description="Краткое описание", ordering=Length("content"))
     def brief_info(self, women: Women):

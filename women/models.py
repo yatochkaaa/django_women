@@ -1,6 +1,8 @@
 # from transliterate import translit
+from django.core.validators import MinLengthValidator, MaxLengthValidator
 from django.db import models
 from django.urls import reverse
+
 # from django.template.defaultfilters import slugify
 
 
@@ -52,7 +54,21 @@ class Women(models.Model):
     # Fields
     title = models.CharField(max_length=255, verbose_name="Заголовок")
     slug = models.SlugField(
-        max_length=255, db_index=True, unique=True, verbose_name="Slug"
+        max_length=255,
+        db_index=True,
+        unique=True,
+        verbose_name="Slug",
+        validators=[
+            MinLengthValidator(4, message="Минимум 4 символа"),
+            MaxLengthValidator(100, message="Максимум 100 символов"),
+        ],
+    )
+    photo = models.ImageField(
+        upload_to="photos/%Y/%m/%d/",
+        default=None,
+        blank=True,
+        null=True,
+        verbose_name="Фото",
     )
     content = models.TextField(blank=True, verbose_name="Текст статьи")
     time_create = models.DateTimeField(auto_now_add=True, verbose_name="Время создания")
@@ -101,3 +117,7 @@ class Women(models.Model):
     # def save(self, *args, **kwargs):
     #     self.slug = slugify(translit(self.title, reversed=True))
     #     super().save(*args, **kwargs)
+
+
+class UploadFiles(models.Model):
+    file = models.FileField(upload_to="uploads_model")
