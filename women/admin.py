@@ -57,7 +57,9 @@ class WomenAdmin(admin.ModelAdmin):
     @admin.display(description="Изображение")
     def post_photo(self, women: Women):
         if women.photo:
-            return mark_safe(f'<img src="{women.photo.url}" width="50" height="50">')
+            return mark_safe(
+                f'<img src="{women.photo.url}" width="50" height="50" style="object-fit: cover">'
+            )
         return "Без фото"
 
     @admin.display(description="Краткое описание", ordering=Length("content"))
