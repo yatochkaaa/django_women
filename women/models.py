@@ -1,9 +1,7 @@
-# from transliterate import translit
 from django.core.validators import MinLengthValidator, MaxLengthValidator
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
-
-# from django.template.defaultfilters import slugify
 
 
 class PublishedManager(models.Manager):
@@ -97,6 +95,13 @@ class Women(models.Model):
         related_name="women",
         verbose_name="Муж",
     )
+    author = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.SET_NULL,
+        related_name="posts",
+        null=True,
+        default=None,
+    )
 
     # Managers
     objects = models.Manager()
@@ -113,10 +118,6 @@ class Women(models.Model):
 
     def get_absolute_url(self):
         return reverse("post", kwargs={"post_slug": self.slug})
-
-    # def save(self, *args, **kwargs):
-    #     self.slug = slugify(translit(self.title, reversed=True))
-    #     super().save(*args, **kwargs)
 
 
 class UploadFiles(models.Model):

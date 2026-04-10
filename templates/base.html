@@ -25,17 +25,24 @@
                                         <div class="logo"></div>
                                     </a>
                                 </li>
-                                {% for menu_item in menu %}
-                                    {% if not forloop.last %}
-                                        <li>
-                                            <a href="{% url menu_item.url_name %}">{{ menu_item.title }}</a>
-                                        </li>
-                                    {% else %}
-                                        <li class="last">
-                                            <a href="{% url menu_item.url_name %}">{{ menu_item.title }}</a>
-                                        </li>
-                                    {% endif %}
+                                {% for menu_item in main_menu %}
+                                    <li>
+                                        <a href="{% url menu_item.url_name %}">{{ menu_item.title }}</a>
+                                    </li>
                                 {% endfor %}
+                                {% if user.is_authenticated %}
+                                    <li class="last">
+                                        <a href="{% url "users:profile" %}">{{ user.username }}</a> |
+                                        <form action="{% url "users:logout" %}" method="post" class="logout-form">
+                                            {% csrf_token %}
+                                            <button type="submit" class="logout-btn">Выйти</button>
+                                        </form>
+                                    </li>
+                                {% else %}
+                                    <li class="last">
+                                        <a href="{% url "users:login" %}">Войти</a> | <a href="{% url "users:register" %}">Регистрация</a>
+                                    </li>
+                                {% endif %}
                             </ul>
                             <div class="clear"></div>
                         </div>

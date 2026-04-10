@@ -1,5 +1,9 @@
-from django.http import HttpResponse, HttpResponseNotFound
+from math import perm
+
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.paginator import Paginator
+from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic import (
@@ -10,6 +14,7 @@ from django.views.generic import (
     UpdateView,
 )
 
+from .forms import AddPostForm
 from .utils import DataMixin
 from .models import Category, TagPost, Women
 
@@ -26,6 +31,7 @@ class WomenHome(DataMixin, ListView):
         return Women.published.all().select_related("category")
 
 
+@login_required
 def about(request):
     contact_list = Women.published.all()
     paginator = Paginator(contact_list, 3)
@@ -50,11 +56,16 @@ class ShowPost(DataMixin, DetailView):
         return get_object_or_404(Women.published, slug=self.kwargs[self.slug_url_kwarg])
 
 
-class AddPage(DataMixin, CreateView):
-    model = Women
-    fields = "__all__"
+class AddPage(PermissionRequiredMixin, LoginRequiredMixin, DataMixin, CreateView):
+    form_class = AddPostForm
     template_name = "women/addpage.html"
     title_page = "Добавление статьи"
+    permission_required = "women.add_women"
+
+    def form_valid(self, form):
+        data = form.save(commit=False)
+        data.author = self.request.user
+        return super().form_valid(form)
 
     # <FormView code>
     # form_class = AddPostForm
@@ -65,12 +76,13 @@ class AddPage(DataMixin, CreateView):
     #     return super().form_valid(form)
 
 
-class UpdatePage(DataMixin, UpdateView):
+class UpdatePage(PermissionRequiredMixin, DataMixin, UpdateView):
     model = Women
     fields = ["title", "content", "photo", "is_published", "category"]
     template_name = "women/addpage.html"
     success_url = reverse_lazy("home")
     title_page = "Редактирование статьи"
+    permission_required = "women.change_women"
 
 
 class DeletePage(DataMixin, DeleteView):

@@ -509,3 +509,25 @@ ul.lang-list li a:hover {
 .list-pages .page-num-selected:hover {
   box-shadow: none;
 }
+
+.logout-form {
+  display: inline-block;
+}
+
+.logout-form button {
+  background: transparent;
+  padding: 0;
+  color: #fdc073;
+  border: 0;
+  font-size: 20px;
+  cursor: pointer;
+}
+.logout-form button:hover {
+  color: #fda83d;
+}
+
+.social-auth {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
