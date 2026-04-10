@@ -1,10 +1,11 @@
-from django import forms
 
+from django import forms
 # from django.core.validators import MinLengthValidator, MaxLengthValidator
 from django.core.exceptions import ValidationError
 from django.utils.deconstruct import deconstructible
-from .models import Category, Husband, Women
 
+from captcha.fields import CaptchaField
+from .models import Category, Husband, Women
 
 @deconstructible
 class RussianValidator:
@@ -101,6 +102,16 @@ class AddPostForm(forms.ModelForm):
             raise ValidationError("Длина превышет 50 символов")
 
         return title
-    
+
+
 class UploadFileForm(forms.Form):
     file = forms.ImageField(label="Файл")
+
+
+class ContactForm(forms.Form):
+    name = forms.CharField(label="Имя", max_length=100)
+    email = forms.EmailField(label="E-mail")
+    message = forms.CharField(
+        label="Сообщение", widget=forms.Textarea(attrs={"cols": 60, "rows": 10})
+    )
+    captcha = CaptchaField()

@@ -1,6 +1,4 @@
-from math import perm
-
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseNotFound
@@ -10,11 +8,12 @@ from django.views.generic import (
     CreateView,
     DeleteView,
     DetailView,
+    FormView,
     ListView,
     UpdateView,
 )
 
-from .forms import AddPostForm
+from .forms import AddPostForm, ContactForm
 from .utils import DataMixin
 from .models import Category, TagPost, Women
 
@@ -92,8 +91,19 @@ class DeletePage(DataMixin, DeleteView):
     title_page = "Удаление статьи"
 
 
-def contact(request):
-    return HttpResponse("Обратная связь")
+class ContactFormView(LoginRequiredMixin, DataMixin, FormView):
+    template_name = "women/contact.html"
+    form_class = ContactForm
+    success_url = reverse_lazy("home")
+    title_page = "Обратная связь"
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        return super().form_valid(form)
+
+
+# def contact(request):
+#     return HttpResponse("Обратная связь")
 
 
 def login(request):
@@ -127,7 +137,6 @@ def show_category(request, category_slug):
     )
     data = {
         "title": f"Рубрика: {category.name}",
-        "menu": menu,
         "posts": category_posts,
         "category_selected": category,
     }
